@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: trade-engine-config
+  namespace: tcs
+data:
+  DB_HOST: "postgres-trades-service"
+  DB_PORT: "5432"
+  DB_NAME: "tcs_trades"
+  KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9092"
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: trade-engine
+  namespace: tcs
+  labels:
+    app: trade-engine
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8083
+      targetPort: 8083
+      protocol: TCP
+      name: http
+  selector:
+    app: trade-engine
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trade-engine
+  namespace: tcs
+  labels:
+    app: trade-engine
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: trade-engine
+  template:
+    metadata:
+      labels:
+        app: trade-engine
+        version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8083"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+        - name: trade-engine
+          image: tcs/trade-engine:1.0.0-SNAPSHOT
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8083
+              name: http
+          envFrom:
+            - configMapRef:
+                name: trade-engine-config
+            - secretRef:
+                name: trade-engine-secret
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "kubernetes"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8083
+            initialDelaySeconds: 60
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8083
+            initialDelaySeconds: 30
+            periodSeconds: 5
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: trade-engine-hpa
+  namespace: tcs
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: trade-engine
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
