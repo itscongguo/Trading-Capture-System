@@ -86,6 +86,17 @@ app:
   feign:
     risk-service:
       url: http://${RISK_SERVICE_HOST:localhost}:${RISK_SERVICE_PORT:8082}
+  # Saga and 2PC configuration for distributed transactions
+  saga:
+    enabled: true  # Enable Saga pattern for order creation
+    max-retries: 3  # Max retries per step
+    compensation-timeout: 10000  # Compensation timeout in ms
+    rollback-rate-target: 0.002  # Target <0.2% rollback rate
+  twopc:
+    enabled: true  # Enable Two-Phase Commit for strong consistency
+    prepare-timeout: 5000  # Phase 1 timeout in ms
+    commit-timeout: 10000  # Phase 2 timeout in ms
+    lock-timeout: 30000  # Distributed lock timeout in ms
 
 logging:
   level:
