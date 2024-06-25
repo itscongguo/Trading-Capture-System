@@ -1,0 +1,23 @@
+fastapi==0.109.0
+uvicorn==0.27.0
+pydantic==2.5.3
+python-dotenv==1.0.0
+
+# Financial Data APIs
+yfinance==0.2.36
+newsapi-python==0.2.7
+requests==2.31.0
+
+# LLM Integration
+openai==1.10.0
+langchain==0.1.5
+langchain-openai==0.0.5
+
+# Vector Database (for Phase 2)
+chromadb==0.4.22
+
+# Utils
+python-multipart==0.0.6
+httpx==0.26.0
+pandas==2.2.0
+numpy==1.26.3
