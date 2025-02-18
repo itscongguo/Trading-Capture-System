@@ -1,7 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import Header from '@/components/Header/Header'
 import { Panel } from '@/components'
+import OrderForm from '@/components/OrderForm/OrderForm'
+import OrderList from '@/components/OrderList/OrderList'
+import NotificationPanel from '@/components/NotificationPanel/NotificationPanel'
+import { wsService } from '@/services/websocketService'
 
 const DashboardContainer = styled.div`
   display: flex;
@@ -31,7 +35,7 @@ const MarketDataPanel = styled(Panel)`
   grid-row: 1;
 `
 
-const NotificationPanel = styled(Panel)`
+const NotificationPanelWrapper = styled(Panel)`
   grid-column: 3;
   grid-row: 1 / 3;
 `
@@ -42,36 +46,34 @@ const OrdersPanel = styled(Panel)`
 `
 
 const Dashboard: React.FC = () => {
+  useEffect(() => {
+    wsService.connect()
+
+    return () => {
+      wsService.disconnect()
+    }
+  }, [])
+
   return (
     <DashboardContainer>
       <Header />
       <Content>
         <OrderEntryPanel title="New Order" noPadding>
-          <div style={{ padding: '12px' }}>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '11px' }}>
-              Order entry form will appear here
-            </p>
-          </div>
+          <OrderForm />
         </OrderEntryPanel>
 
         <MarketDataPanel title="Market Data">
-          <p style={{ color: 'var(--text-secondary)', fontSize: '11px' }}>
-            Real-time market data will appear here
+          <p style={{ color: 'var(--text-secondary)', fontSize: '11px', padding: '12px' }}>
+            Real-time market data coming soon
           </p>
         </MarketDataPanel>
 
-        <NotificationPanel title="Notifications">
-          <p style={{ color: 'var(--text-secondary)', fontSize: '11px' }}>
-            Live notifications will appear here
-          </p>
-        </NotificationPanel>
+        <NotificationPanelWrapper title="Notifications" noPadding>
+          <NotificationPanel />
+        </NotificationPanelWrapper>
 
         <OrdersPanel title="Orders & Trades" noPadding>
-          <div style={{ padding: '12px' }}>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '11px' }}>
-              Orders and trade history will appear here
-            </p>
-          </div>
+          <OrderList />
         </OrdersPanel>
       </Content>
     </DashboardContainer>
