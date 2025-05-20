@@ -32,7 +32,18 @@ The Trading Capture System follows a **microservices architecture** with **event
 
 ### Technology Stack
 
-- **Backend**: Java 17, Spring Boot 3, Spring Cloud
+**Frontend**
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **UI Library**: Ant Design with custom Bloomberg Terminal theme
+- **State Management**: Zustand
+- **Real-Time**: WebSocket for live updates
+- **Charts**: Recharts for data visualization
+- **HTTP Client**: Axios with JWT interceptors
+
+**Backend**
+- **Language**: Java 17
+- **Framework**: Spring Boot 3, Spring Cloud
 - **Messaging**: Apache Kafka (event-driven)
 - **Databases**: PostgreSQL (orders, trades, risk), MongoDB (audit), Redis (cache/locks)
 - **Container Orchestration**: Kubernetes
@@ -473,6 +484,7 @@ docker build -t tcs/trade-engine:1.0.0-SNAPSHOT tcs-trade-engine/
 
 ## Implemented Features
 
+**Backend Services**
 - [x] Auth Service with JWT authentication (admin user: congguo/congguooo)
 - [x] API Gateway with Spring Cloud Gateway
 - [x] WebSocket Notification Service for real-time updates
@@ -484,18 +496,68 @@ docker build -t tcs/trade-engine:1.0.0-SNAPSHOT tcs-trade-engine/
 - [x] Docker Compose for local development
 - [x] Kubernetes deployment manifests with Istio
 
+**Frontend Application**
+- [x] Bloomberg Terminal-style React UI with TypeScript
+- [x] Professional login page with JWT authentication
+- [x] Multi-panel trading dashboard layout
+- [x] Order entry form with Buy/Sell functionality
+- [x] Real-time order list with status tracking
+- [x] WebSocket integration for live notifications
+- [x] Price visualization with animated charts
+- [x] Responsive design with custom Bloomberg theme
+- [x] Docker and Nginx production deployment
+
+## Getting Started - Frontend
+
+### Prerequisites
+
+```bash
+Node.js 18+
+npm or yarn
+```
+
+### Running the Frontend
+
+```bash
+cd tcs-frontend
+
+# Install dependencies
+npm install
+
+# Set environment variables
+cp .env.example .env
+
+# Start development server (http://localhost:3000)
+npm run dev
+
+# Build for production
+npm run build
+
+# Login credentials
+# Username: congguo
+# Password: congguooo
+```
+
+### Frontend Features
+
+- **Bloomberg Terminal Theme**: Professional dark UI with orange accents (#FF8C00)
+- **Real-Time Updates**: WebSocket connection for order status and trade notifications
+- **Order Management**: Create, view, and cancel orders in real-time
+- **Type Safety**: Full TypeScript implementation
+- **Responsive Layout**: Multi-panel grid optimized for trading workflow
+
 ## Future Enhancements
 
-- [ ] Frontend React UI
 - [ ] Balance/Settlement Service with transaction handling
 - [ ] Advanced matching algorithms (FIFO, Pro-Rata, etc.)
-- [ ] Market data integration and price feeds
+- [ ] Market data integration and real-time price feeds
 - [ ] Position management and P&L calculation
 - [ ] Reporting and analytics dashboard
-- [ ] Admin UI for system management
 - [ ] Multi-user support beyond admin
 - [ ] OAuth2 integration with external providers
-- [ ] Advanced monitoring and alerting
+- [ ] Advanced monitoring and alerting dashboards
+- [ ] Order book depth visualization
+- [ ] Trade blotter and execution quality analytics
 
 ## License
 
