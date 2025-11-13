@@ -1,0 +1,20 @@
+{
+  "type": "record",
+  "name": "OrderCreatedEvent",
+  "namespace": "com.tcs.common.events.avro",
+  "fields": [
+    {"name": "orderId", "type": "string"},
+    {"name": "clientOrderId", "type": ["null", "string"], "default": null},
+    {"name": "userId", "type": "string"},
+    {"name": "accountId", "type": "string"},
+    {"name": "symbol", "type": "string"},
+    {"name": "side", "type": "string"},
+    {"name": "type", "type": "string"},
+    {"name": "quantity", "type": "string"},
+    {"name": "price", "type": ["null", "string"], "default": null},
+    {"name": "timeInForce", "type": "string"},
+    {"name": "status", "type": "string"},
+    {"name": "timestamp", "type": "long"},
+    {"name": "traceId", "type": ["null", "string"], "default": null}
+  ]
+}

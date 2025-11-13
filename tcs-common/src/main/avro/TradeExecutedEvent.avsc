@@ -1,0 +1,17 @@
+{
+  "type": "record",
+  "name": "TradeExecutedEvent",
+  "namespace": "com.tcs.common.events.avro",
+  "fields": [
+    {"name": "tradeId", "type": "string"},
+    {"name": "orderId", "type": "string"},
+    {"name": "userId", "type": "string"},
+    {"name": "symbol", "type": "string"},
+    {"name": "side", "type": "string"},
+    {"name": "quantity", "type": "string"},
+    {"name": "price", "type": "string"},
+    {"name": "totalAmount", "type": "string"},
+    {"name": "timestamp", "type": "long"},
+    {"name": "traceId", "type": ["null", "string"], "default": null}
+  ]
+}
