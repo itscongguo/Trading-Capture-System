@@ -42,25 +42,52 @@ The Trading Capture System follows a **microservices architecture** with **event
 
 ## Services
 
-### 1. Order Service (Port 8081)
+### 1. API Gateway (Port 8080)
+- Single entry point for all client requests
+- JWT token validation and authentication
+- Route management with Spring Cloud Gateway
+- Circuit breaker and fallback handling
+- CORS configuration
+
+### 2. Auth Service (Port 8084)
+- User authentication with JWT tokens
+- Admin user: **username: `congguo`**, **password: `congguooo`**
+- Token generation and validation
+- Refresh token support
+- Session management with Redis
+
+### 3. Order Service (Port 8081)
 - Accepts and validates orders from clients
 - Performs initial risk checks via Risk Service
 - Publishes order events to Kafka
 - Provides order query APIs
+- Requires JWT authentication
 
-### 2. Risk Service (Port 8082)
+### 4. Risk Service (Port 8082)
 - Real-time risk checks using Redis
 - Manages user quotas and limits
 - Account-level and symbol-level risk management
 - Quota reservation and release
 
-### 3. Trade Engine (Port 8083)
+### 5. Trade Engine (Port 8083)
 - Kafka consumer for order events
 - Implements matching logic (price-time priority)
 - Generates trade execution events
 - Persists trade records
 
-### 4. Common Module
+### 6. Notification Service (Port 8085)
+- WebSocket server for real-time notifications
+- Kafka consumer for order status and trade events
+- Pushes updates to connected clients
+- Session management for multiple users
+
+### 7. Audit Service (Port 8086)
+- Kafka consumer for all events
+- Persists audit logs to MongoDB
+- Event tracking and compliance
+- Query APIs for audit history
+
+### 8. Common Module
 - Shared DTOs, enums, and utilities
 - Kafka event schemas (Avro)
 - Exception handling framework
@@ -102,23 +129,47 @@ mvn clean install -DskipTests
 
 ### 3. Run Services
 
-Open 3 terminal windows and run each service:
+Open multiple terminal windows and run each service:
 
-**Terminal 1 - Order Service:**
+**Terminal 1 - Auth Service:**
+```bash
+cd tcs-auth-service
+mvn spring-boot:run
+```
+
+**Terminal 2 - API Gateway:**
+```bash
+cd tcs-api-gateway
+mvn spring-boot:run
+```
+
+**Terminal 3 - Order Service:**
 ```bash
 cd tcs-order-service
 mvn spring-boot:run
 ```
 
-**Terminal 2 - Risk Service:**
+**Terminal 4 - Risk Service:**
 ```bash
 cd tcs-risk-service
 mvn spring-boot:run
 ```
 
-**Terminal 3 - Trade Engine:**
+**Terminal 5 - Trade Engine:**
 ```bash
 cd tcs-trade-engine
+mvn spring-boot:run
+```
+
+**Terminal 6 - Notification Service:**
+```bash
+cd tcs-notification-service
+mvn spring-boot:run
+```
+
+**Terminal 7 - Audit Service:**
+```bash
+cd tcs-audit-service
 mvn spring-boot:run
 ```
 
@@ -138,13 +189,47 @@ curl http://localhost:8083/actuator/health
 
 ## Testing the System
 
-### Submit an Order
+### Step 1: Login to Get JWT Token
+
+Login with the admin user:
 
 ```bash
-curl -X POST http://localhost:8081/api/orders \
+curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
-  -H "X-User-Id: test-user-1" \
-  -H "X-Trace-Id: test-trace-$(date +%s)" \
+  -d '{
+    "username": "congguo",
+    "password": "congguooo"
+  }'
+```
+
+Response will include an `accessToken`. Save this token for subsequent requests.
+
+Example response:
+```json
+{
+  "accessToken": "eyJhbGc...",
+  "refreshToken": "eyJhbGc...",
+  "tokenType": "Bearer",
+  "expiresIn": 86400,
+  "userInfo": {
+    "userId": "admin-user-001",
+    "username": "congguo",
+    "accountId": "admin-account-001",
+    "role": "ADMIN"
+  }
+}
+```
+
+### Step 2: Submit an Order
+
+Use the access token from login:
+
+```bash
+export TOKEN="your_access_token_here"
+
+curl -X POST http://localhost:8080/api/orders \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $TOKEN" \
   -d '{
     "symbol": "AAPL",
     "side": "BUY",
@@ -152,22 +237,40 @@ curl -X POST http://localhost:8081/api/orders \
     "quantity": 100,
     "price": 180.50,
     "timeInForce": "GTC",
-    "accountId": "test-account-1"
+    "accountId": "admin-account-001"
   }'
 ```
 
-### Query Order Status
+### Step 3: Query Order Status
 
 ```bash
-curl http://localhost:8081/api/orders/{orderId}
+curl http://localhost:8080/api/orders/{orderId} \
+  -H "Authorization: Bearer $TOKEN"
 ```
 
-### View User Orders
+### Step 4: View User Orders
 
 ```bash
-curl http://localhost:8081/api/orders \
-  -H "X-User-Id: test-user-1"
+curl http://localhost:8080/api/orders \
+  -H "Authorization: Bearer $TOKEN"
 ```
+
+### Step 5: Connect to WebSocket for Real-time Updates
+
+Connect to WebSocket endpoint to receive real-time order updates:
+
+```javascript
+const ws = new WebSocket('ws://localhost:8085/ws/orders/admin-user-001');
+
+ws.onmessage = function(event) {
+  const notification = JSON.parse(event.data);
+  console.log('Received notification:', notification);
+};
+```
+
+Notifications will be sent for:
+- Order status changes (PENDING → FILLED, REJECTED, etc.)
+- Trade executions
 
 ## Monitoring
 
@@ -368,18 +471,31 @@ docker build -t tcs/risk-service:1.0.0-SNAPSHOT tcs-risk-service/
 docker build -t tcs/trade-engine:1.0.0-SNAPSHOT tcs-trade-engine/
 ```
 
+## Implemented Features
+
+- [x] Auth Service with JWT authentication (admin user: congguo/congguooo)
+- [x] API Gateway with Spring Cloud Gateway
+- [x] WebSocket Notification Service for real-time updates
+- [x] Audit Service with MongoDB for compliance logging
+- [x] Order Service with validation and risk integration
+- [x] Risk Service with Redis-backed quota management
+- [x] Trade Engine with matching logic
+- [x] Complete Kafka event-driven architecture
+- [x] Docker Compose for local development
+- [x] Kubernetes deployment manifests with Istio
+
 ## Future Enhancements
 
-- [ ] WebSocket Notification Service
-- [ ] Audit Service with MongoDB
-- [ ] Auth Service with OAuth2/JWT
-- [ ] API Gateway with Spring Cloud Gateway
 - [ ] Frontend React UI
-- [ ] Balance/Settlement Service
-- [ ] Advanced matching algorithms
-- [ ] Market data integration
-- [ ] Position management
-- [ ] Reporting and analytics
+- [ ] Balance/Settlement Service with transaction handling
+- [ ] Advanced matching algorithms (FIFO, Pro-Rata, etc.)
+- [ ] Market data integration and price feeds
+- [ ] Position management and P&L calculation
+- [ ] Reporting and analytics dashboard
+- [ ] Admin UI for system management
+- [ ] Multi-user support beyond admin
+- [ ] OAuth2 integration with external providers
+- [ ] Advanced monitoring and alerting
 
 ## License
 

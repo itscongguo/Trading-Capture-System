@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: tcs-auth-service
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: 0
+      timeout: 3000ms
+
+server:
+  port: 8084
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+
+# JWT Configuration
+app:
+  jwt:
+    secret: ${JWT_SECRET:TCS-Trading-Capture-System-Secret-Key-2024-Very-Long-And-Secure}
+    expiration: 86400000  # 24 hours in milliseconds
+    refresh-expiration: 604800000  # 7 days in milliseconds
+  admin:
+    username: congguo
+    password: congguooo
+    userId: admin-user-001
+    accountId: admin-account-001
+
+logging:
+  level:
+    root: INFO
+    com.tcs: DEBUG
+    org.springframework.security: DEBUG
