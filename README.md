@@ -565,4 +565,4 @@ Proprietary - Trading Capture System
 
 ## Contact
 
-For questions or support, contact the TCS development team.
+For questions or support, contact haoconghe116@gmail.com.
