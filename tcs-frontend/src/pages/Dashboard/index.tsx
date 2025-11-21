@@ -5,6 +5,7 @@ import { Panel } from '@/components'
 import OrderForm from '@/components/OrderForm/OrderForm'
 import OrderList from '@/components/OrderList/OrderList'
 import NotificationPanel from '@/components/NotificationPanel/NotificationPanel'
+import MarketDataPanel from '@/components/MarketDataPanel'
 import { wsService } from '@/services/websocketService'
 
 const DashboardContainer = styled.div`
@@ -30,7 +31,7 @@ const OrderEntryPanel = styled(Panel)`
   grid-row: 1;
 `
 
-const MarketDataPanel = styled(Panel)`
+const MarketDataPanelWrapper = styled(Panel)`
   grid-column: 2;
   grid-row: 1;
 `
@@ -62,11 +63,9 @@ const Dashboard: React.FC = () => {
           <OrderForm />
         </OrderEntryPanel>
 
-        <MarketDataPanel title="Market Data">
-          <p style={{ color: 'var(--text-secondary)', fontSize: '11px', padding: '12px' }}>
-            Real-time market data coming soon
-          </p>
-        </MarketDataPanel>
+        <MarketDataPanelWrapper title="Market Data" noPadding>
+          <MarketDataPanel />
+        </MarketDataPanelWrapper>
 
         <NotificationPanelWrapper title="Notifications" noPadding>
           <NotificationPanel />

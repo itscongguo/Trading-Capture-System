@@ -113,10 +113,33 @@ export interface MarketData {
 
 export interface Notification {
   id: string
-  type: 'ORDER_STATUS' | 'TRADE' | 'SYSTEM'
+  type: 'ORDER_STATUS' | 'TRADE' | 'SYSTEM' | 'MARKET_NEWS'
   title: string
   message: string
   timestamp: string
   read: boolean
   data?: any
+}
+
+export interface MarketNews {
+  id: number
+  category: string
+  datetime: number
+  headline: string
+  image: string
+  related: string
+  source: string
+  summary: string
+  url: string
+}
+
+export interface MarketQuote {
+  c: number  // Current price
+  d: number  // Change
+  dp: number // Percent change
+  h: number  // High price of the day
+  l: number  // Low price of the day
+  o: number  // Open price of the day
+  pc: number // Previous close price
+  t: number  // Timestamp
 }

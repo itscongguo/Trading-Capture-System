@@ -7,6 +7,7 @@ Bloomberg Terminal-style trading application built with React and TypeScript.
 - **Bloomberg Terminal-Inspired UI** - Professional dark theme with orange accents
 - **Real-Time Order Management** - Create, track, and cancel orders in real-time
 - **WebSocket Integration** - Live order status updates and trade notifications
+- **Live Market Data** - Real-time stock quotes and financial news via Finnhub API
 - **Comprehensive Dashboard** - Multi-panel layout for trading operations
 - **Type-Safe Development** - Full TypeScript implementation
 - **Responsive Design** - Optimized for different screen sizes
@@ -55,10 +56,35 @@ npm run preview
 
 ## Environment Variables
 
-```
+```bash
 VITE_API_BASE_URL=http://localhost:8080
 VITE_WS_URL=ws://localhost:8085/ws
 ```
+
+### Finnhub API Configuration
+
+To enable real-time market data and financial news, you need a Finnhub API key:
+
+1. **Get a free API key**: Register at [https://finnhub.io/register](https://finnhub.io/register)
+
+2. **Configure the API key** (choose one method):
+
+   **Option 1: Shell Environment Variable (Recommended for macOS/Linux)**
+   ```bash
+   # Add to ~/.zshrc or ~/.bashrc
+   export FINNHUB_API_KEY="your_api_key_here"
+
+   # Reload shell configuration
+   source ~/.zshrc  # or source ~/.bashrc
+   ```
+
+   **Option 2: Local .env file**
+   ```bash
+   # Create .env.local (not committed to git)
+   echo "VITE_FINNHUB_API_KEY=your_api_key_here" > .env.local
+   ```
+
+3. **Restart the development server** to apply changes
 
 ## Project Structure
 
@@ -69,6 +95,8 @@ src/
 │   ├── Panel/          # Bloomberg-style panel container
 │   ├── OrderForm/      # Order entry form
 │   ├── OrderList/      # Orders table
+│   ├── MarketDataPanel/ # Market data and news feed
+│   ├── NotificationPanel/ # Real-time notifications
 │   ├── PriceChart/     # Price visualization
 │   ├── PriceDisplay/   # Animated price display
 │   ├── StatusBadge/    # Order status indicator
@@ -80,6 +108,7 @@ src/
 │   ├── api.ts          # Axios instance with interceptors
 │   ├── authService.ts  # Authentication API
 │   ├── orderService.ts # Order management API
+│   ├── finnhubService.ts # Finnhub market data API
 │   └── websocketService.ts # Real-time updates
 ├── stores/             # Zustand state management
 │   └── authStore.ts    # Authentication state
