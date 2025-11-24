@@ -6,6 +6,7 @@ import OrderForm from '@/components/OrderForm/OrderForm'
 import OrderList from '@/components/OrderList/OrderList'
 import NotificationPanel from '@/components/NotificationPanel/NotificationPanel'
 import MarketDataPanel from '@/components/MarketDataPanel'
+import AIChat from '@/components/AIChat'
 import { wsService } from '@/services/websocketService'
 
 const DashboardContainer = styled.div`
@@ -75,6 +76,8 @@ const Dashboard: React.FC = () => {
           <OrderList />
         </OrdersPanel>
       </Content>
+
+      <AIChat />
     </DashboardContainer>
   )
 }
