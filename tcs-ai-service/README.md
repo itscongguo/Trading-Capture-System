@@ -6,14 +6,14 @@ AI-powered market insights and trading recommendations using LLM and real-time f
 
 - **Real-Time Stock Data**: Integration with Yahoo Finance API
 - **News Analysis**: Latest financial news from NewsAPI
-- **AI-Powered Insights**: LLM-based market analysis using OpenAI GPT
+- **AI-Powered Insights**: LLM-based market analysis using Gemini 2.5 flash
 - **Smart Caching**: Redis-based caching to optimize API usage
 - **RESTful API**: Easy integration with frontend and other services
 
 ## Technology Stack
 
-- **Framework**: FastAPI (Python 3.11)
-- **LLM**: OpenAI GPT-3.5-turbo / GPT-4
+- **Framework**: FastAPI 
+- **LLM**: Gemini 2.5 flash
 - **Data Sources**:
   - Yahoo Finance (stock data)
   - NewsAPI (financial news)
@@ -25,8 +25,8 @@ AI-powered market insights and trading recommendations using LLM and real-time f
 ### Prerequisites
 
 - Python 3.11+
-- Redis (optional, for caching)
-- OpenAI API Key (for AI features)
+- Redis (for caching)
+- Gemini API Key (for AI features)
 - NewsAPI Key (optional, for news)
 
 ### Installation
@@ -39,7 +39,7 @@ pip install -r requirements.txt
 cp .env.example .env
 
 # Edit .env and add your API keys
-# OPENAI_API_KEY=your-key-here
+# GEMINI_API_KEY=your-key-here
 # NEWS_API_KEY=your-key-here
 ```
 
@@ -192,7 +192,7 @@ curl -X POST http://localhost:8087/api/ai/analyze \
 ## Future Enhancements (Phase 2)
 
 - [ ] RAG integration with ChromaDB
-- [ ] PDF财报解析和索引
+- [ ] PDF financial report parsing and indexing
 - [ ] LangChain Agent for complex queries
 - [ ] Historical data analysis
 - [ ] Custom trading strategies
